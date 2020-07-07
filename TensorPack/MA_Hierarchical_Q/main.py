@@ -27,7 +27,7 @@ GAMMA = 0.99
 
 MEMORY_SIZE = 100
 INIT_MEMORY_SIZE = MEMORY_SIZE // 10
-STEPS_PER_EPOCH = 200 // UPDATE_FREQ  # each epoch is 100k played frames
+STEPS_PER_EPOCH = 500 // UPDATE_FREQ  # each epoch is 100k played frames
 EVAL_EPISODE = 20
 
 NUM_ACTIONS = None
