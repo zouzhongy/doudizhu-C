@@ -32,6 +32,7 @@ class Agent:
 
 class RandomAgent(Agent):
     def intention(self, env):
+        print("RandomAgent play")
         mask = get_mask(env.get_curr_handcards(), action_space, env.get_last_outcards())
         intention = np.random.choice(action_space, 1, p=mask / mask.sum())[0]
         return intention
@@ -44,14 +45,17 @@ class RHCPAgent(Agent):
 
 
 class CDQNAgent(Agent):
+    # role_id = 1 是地主上家
+    # role_id = 2 是地主
+    # role_id = 3 是地主下家
     def __init__(self, role_id, weight_path):
         def role2agent(role):
             if role == 2:
-                return 'agent1'
+                return 'agent1' #地主1
             elif role == 1:
-                return 'agent3'
+                return 'agent3' #地主上家
             else:
-                return 'agent2'
+                return 'agent2' #地主下家
         super().__init__(role_id)
         agent_names = ['agent%d' % i for i in range(1, 4)]
         model = Model(agent_names, (1000, 21, 256 + 256 * 2 + 120), 'Double', (1000, 21), 0.99)
@@ -62,6 +66,7 @@ class CDQNAgent(Agent):
             output_names=[role2agent(role_id) + '/Qvalue'])), num_actions=(1000, 21))
 
     def intention(self, env):
+        print("CDQNAgent play")
         handcards = env.get_curr_handcards()
         last_two_cards = env.get_last_two_cards()
         prob_state = env.get_state_prob()
@@ -99,12 +104,16 @@ class MCTAgent(Agent):
 
 def make_agent(which, role_id):
     if which == 'RHCP':
+        print("RHCP agent as ",role_id)
         return RHCPAgent(role_id)
     elif which == 'RANDOM':
+        print("RANDOM agent as ",role_id)
         return RandomAgent(role_id)
     elif which == 'CDQN':
+        print("CDQN agent as ",role_id)
         return CDQNAgent(role_id, weight_path)
     elif which == 'MCT':
+        print("MCT agent as ",role_id)
         return MCTAgent(role_id)
     else:
         raise Exception('env type not supported')

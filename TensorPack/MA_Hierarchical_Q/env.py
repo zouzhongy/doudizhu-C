@@ -63,6 +63,8 @@ class Env:
         self.curr_player = self.lord
 
     def step(self, intention):
+        print(self.get_curr_agent_name() + str(self.get_curr_handcards()) + " play:")
+        print(str(intention))
         self.out_cards[self.agent_names.index(self.curr_player)] = intention
         if len(intention) == 0:
             self.curr_player = self.agent_names[(self.agent_names.index(self.curr_player) + 1) % len(self.agent_names)]
@@ -75,6 +77,10 @@ class Env:
 
             self.histories[self.curr_player].extend(intention)
             if len(self.player_cards[self.curr_player]) == 0:
+                if 'agent1' == self.curr_player:
+                    print("winner is landlord ")
+                else:
+                    print("winner is fammer ")
                 return self.curr_player, True
             else:
                 self.curr_player = self.agent_names[

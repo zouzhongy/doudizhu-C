@@ -8,11 +8,12 @@ from tensorpack.utils.stats import StatCounter
 from tensorpack.utils.utils import get_tqdm
 from multiprocessing import *
 from datetime import datetime
-from scripts.envs import make_env
-from scripts.agents import make_agent
+from envs import make_env
+from agents import make_agent
 
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
-types = ['RANDOM', 'RHCP', 'CDQN']
+types = ['CDQN', 'RANDOM', 'RANDOM']
 
 
 def eval_episode(env, agent):
@@ -21,6 +22,7 @@ def eval_episode(env, agent):
     done = False
     r = 0
     while not done:
+        print("env role ID" + str(env.get_role_ID())+ " agent role id " + str(agent.role_id))
         if env.get_role_ID() != agent.role_id:
             r, done = env.step_auto()
         else:
@@ -49,14 +51,25 @@ def eval_proc(file_name):
                     f.write('%s with role id %d against %s, winning rate: %f\n' % (ta, role_id, te, st.average))
     f.close()
 
+def onlytest():
+    # env = make_env('RHCP')
+    #env = make_env('RANDOM')
+    #env = make_env('MCT')
+    # env = make_env('CDQN')
+    
+    env = make_env('CDQN')
+    agent = make_agent('RANDOM', 1)
+    eval_episode(env, agent)
 
 if __name__ == '__main__':
-    procs = []
-    for i in range(cpu_count() // 2):
-        procs.append(Process(target=eval_proc, args=('res%d.txt' % i,)))
-    for p in procs:
-        p.start()
-    for p in procs:
-        p.join()
+    onlytest();
+    # eval_proc('res_.txt')
+    # procs = []
+    # for i in range(cpu_count() // 2):
+    #     procs.append(Process(target=eval_proc, args=('res%d.txt' % i,)))
+    # for p in procs:
+    #     p.start()
+    # for p in procs:
+    #     p.join()
 
 

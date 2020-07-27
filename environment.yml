@@ -1,6 +1,9 @@
 name: doudizhu
-channels:
-  - defaults
+channels:  
+  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/
+  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main/
+  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud//pytorch/
+  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/conda-forge/
 dependencies:
   - _libgcc_mutex=0.1=main
   - ca-certificates=2019.11.27=0

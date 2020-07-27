@@ -1,5 +1,6 @@
 import os
 import sys
+import json
 FILE_PATH = os.path.dirname(os.path.abspath(__file__))
 ROOT_PATH = os.path.abspath(os.path.join(FILE_PATH, '..'))
 sys.path.append(ROOT_PATH)
@@ -89,6 +90,14 @@ class MCTEnv(Env):
 
 
 class RandomEnv(Env):
+    
+    def __init__(self):
+        super().__init__()
+        father_Env = Env
+        
+    def get_state(self):
+       return father_Env.get_state()
+        
     def step(self, intention):
         # print(self.get_curr_handcards())
         # print(intention)
@@ -127,8 +136,39 @@ class CDQNEnv(Env):
         handcards = self.get_curr_handcards()
         last_two_cards = self.get_last_two_cards()
         prob_state = self.get_state_prob()
+        # game_state = self.getState()
+        # game_state_padded = self.get_state_padded()
+        # game_state_state2 = self.get_state2()
+        # #获取
+        # game_cards_value = self.get_cards_value()
+        str_handcards = json.dumps(handcards)
+        str_last_two_cards = json.dumps(last_two_cards)
+        str_prob_state = prob_state.tolist()
+        # str_prob_state = str(str_prob_state)
+        str_prob_state = json.dumps(str_prob_state)
+        
+        str_agent_name = json.dumps(self.get_curr_agent_name())
+        
         intention = self.predictors[self.get_curr_agent_name()].predict(handcards, last_two_cards, prob_state)
         return self.step(intention)
+    
+    def getIntention(self,str_player,str_handcards,str_last_two_cards,str_prob_state):
+        
+        # if player == 'landlord':
+        #     curr_agent_name = 'agent1'
+        # elif player == 'up_player':
+        #     curr_agent_name = 'agent3'
+        # elif player == 'down_player':
+        #     curr_agent_name = 'agent2'
+            
+        player = json.loads(str_player)
+        prob_state = json.loads(str_prob_state)
+        handcards = json.loads(str_handcards)
+        last_two_cards = json.loads(str_last_two_cards)
+
+        intention = self.predictors[player].predict(handcards, last_two_cards, prob_state)
+        return intention
+    
 
 
 class RHCPEnv(CEnv):
@@ -191,7 +231,11 @@ class RHCPEnv(CEnv):
         # print(intention)
         return r, r != 0
 
-
+class ManualEnv(CEnv):
+    def step(self, intention):
+        print(intention)
+    def step_auto(self):
+        print("step_auto")
 def make_env(which):
     if which == 'RHCP':
         return RHCPEnv()
@@ -201,5 +245,7 @@ def make_env(which):
         return CDQNEnv(weight_path)
     elif which == 'MCT':
         return MCTEnv()
+    elif which == 'Manual':
+        return ManualEnv()
     else:
         raise Exception('env type not supported')
